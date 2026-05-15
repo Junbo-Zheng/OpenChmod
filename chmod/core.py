@@ -5,7 +5,6 @@
 
 import fnmatch
 import os
-import sys
 from pathlib import Path
 
 EXEC_EXTENSIONS = frozenset(
@@ -13,17 +12,12 @@ EXEC_EXTENSIONS = frozenset(
         ".bash",
         ".cgi",
         ".csh",
-        ".exe",
-        ".o",
         ".out",
         ".par",
         ".pl",
         ".py",
-        ".pyc",
-        ".pyo",
         ".rb",
         ".sh",
-        ".so",
     }
 )
 
@@ -66,6 +60,7 @@ def chmod_recursive(
     include=None,
     dry_run=False,
     check=False,
+    files_only=False,
 ):
     """Recursively set permissions on a directory tree.
 
@@ -81,6 +76,7 @@ def chmod_recursive(
                  files are skipped.
         dry_run: Show what would change without modifying anything.
         check: Return list of files with wrong permissions (no modifications).
+        files_only: Skip directory permissions; only process files.
 
     Returns:
         List of (path, current_mode, expected_mode) tuples when check=True,
@@ -97,18 +93,19 @@ def chmod_recursive(
     for root, dirs, files in os.walk(directory, followlinks=follow_symlinks):
         dirs[:] = [d for d in dirs if not should_skip(d, exclude)]
 
-        current = os.stat(root).st_mode & 0o7777
-        if current != dir_mode:
-            if check or dry_run:
-                mismatches.append((root, oct(current), oct(dir_mode)))
-                if dry_run:
-                    print(f"would chmod {oct(current)} -> {oct(dir_mode)}: {root}")
-            else:
-                os.chmod(root, dir_mode)
-                if verbose:
-                    print(f"dir: {root}")
-        elif verbose and not check and not dry_run:
-            print(f"ok: {root}")
+        if not files_only:
+            current = os.stat(root).st_mode & 0o7777
+            if current != dir_mode:
+                if check or dry_run:
+                    mismatches.append((root, oct(current), oct(dir_mode)))
+                    if dry_run:
+                        print(f"would chmod {oct(current)} -> {oct(dir_mode)}: {root}")
+                else:
+                    os.chmod(root, dir_mode)
+                    if verbose:
+                        print(f"dir: {root}")
+            elif verbose and not check and not dry_run:
+                print(f"ok: {root}")
 
         for filename in files:
             if should_skip(filename, exclude):

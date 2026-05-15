@@ -6,17 +6,17 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "openchmod"
-version = "0.0.1"
+name = "pychmod"
+version = "0.0.2"
 description = "Recursively chmod directories, files, and executables with sensible defaults."
 readme = "README.md"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 authors = [
     { name = "Junbo Zheng", email = "junbo.zheng@outlook.com" },
 ]
 classifiers = [
-    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -40,6 +40,7 @@ pychmod = "chmod.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/Junbo-Zheng/OpenChmod"
+Repository = "https://github.com/Junbo-Zheng/OpenChmod"
 Issues = "https://github.com/Junbo-Zheng/OpenChmod/issues"
 
 [tool.hatch.build.targets.wheel]
