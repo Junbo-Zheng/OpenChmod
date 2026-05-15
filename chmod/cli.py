@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Junbo Zheng
 
-"""Command-line interface for openchmod."""
+"""Command-line interface for pychmod."""
 
 import argparse
 import os
@@ -71,6 +71,11 @@ def build_parser():
         help="Glob pattern to include (repeatable, files only).",
     )
     parser.add_argument(
+        "--files-only",
+        action="store_true",
+        help="Skip directory permissions (only chmod files).",
+    )
+    parser.add_argument(
         "-s",
         "--symlinks",
         action="store_true",
@@ -97,7 +102,7 @@ def build_parser():
 
 
 def main(argv=None):
-    """Entry point for the openchmod CLI."""
+    """Entry point for the pychmod CLI."""
     parser = build_parser()
     args = parser.parse_args(argv)
 
@@ -123,6 +128,7 @@ def main(argv=None):
             include=args.include,
             dry_run=args.dry_run,
             check=args.check,
+            files_only=args.files_only,
         )
     except OSError as e:
         sys.stderr.write(f"Error: {e}\n")

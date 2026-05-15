@@ -7,7 +7,7 @@ import stat
 import pytest
 
 import chmod as openchmod
-from chmod.core import chmod_recursive, classify_file, is_script
+from chmod.core import chmod_recursive, classify_file
 from chmod.cli import main
 
 
@@ -16,7 +16,7 @@ def get_mode(path):
 
 
 def test_version():
-    assert openchmod.__version__ == "0.0.1"
+    assert openchmod.__version__ == "0.0.2"
 
 
 class TestClassifyFile:
@@ -125,6 +125,17 @@ class TestChmodRecursive:
         assert len(result) > 0
         paths = [r[0] for r in result]
         assert str(f) in paths
+
+    def test_files_only_skips_dirs(self, tmp_path):
+        f = tmp_path / "file.txt"
+        f.write_text("x")
+        os.chmod(str(f), 0o777)
+        os.chmod(str(tmp_path), 0o777)
+
+        chmod_recursive(str(tmp_path), files_only=True)
+
+        assert get_mode(str(f)) == 0o644  # file fixed
+        assert get_mode(str(tmp_path)) == 0o777  # dir untouched
 
     def test_check_returns_empty_when_correct(self, tmp_path):
         f = tmp_path / "file.txt"
